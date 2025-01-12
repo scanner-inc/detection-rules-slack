@@ -1,0 +1,44 @@
+# schema: https://scanner.dev/schema/scanner-detection-rule.v1.json
+name: Slack malicious content detected in uploaded file
+description: |-
+  ## Goal
+
+  Detect when a malicious file is shared or uploaded in Slack.
+
+  ## Strategy
+
+  This rule monitors Slack for potentially malicious file uploads or shares. Malicious files can be detected through security tools or antivirus mechanisms. Sharing these files may lead to malware infections or data breaches if users interact with them.
+
+  ## Triage and Response
+
+  1. Confirm if the file is truly malicious by:
+
+     - Reviewing the flagged file's details, including its type, name, and hash using security tools.
+     - Identifying the user who uploaded or shared the file and contacting them to check if the sharing was intentional or if their account may be compromised.
+     - Checking the user's activity logs for recent file uploads, message history, and behaviors indicating compromised credentials or malicious intent.
+
+  2. If the file is confirmed as malicious:
+
+     - Initiate the organization's incident response process for containment and investigation.
+     - Quarantine the file to prevent further access.
+     - Notify all users who interacted with the file to:
+       - Avoid downloading it.
+       - Run antivirus or detection tools on their systems for potential compromise.
+     - Review and block any additional files from the same source and monitor for similar uploads from the user or others.
+     - Investigate for possible account compromise, and if found, reset credentials and enforce multi-factor authentication.
+enabled: true
+severity: Medium
+query_text: |-
+  %ingest.source_type:slack
+  service:audit-logs-service
+  action:file_malicious_content_detected
+  | groupbycount(actor.user.email)
+  | where @q.count > 0
+time_range_s: 300
+run_frequency_s: 60
+event_sink_keys:
+- medium_severity_alerts
+tags:
+- tactics.ta0002.execution
+- source.slack
+- techniques.t1204.user_execution

@@ -1,0 +1,28 @@
+# schema: https://scanner.dev/schema/scanner-detection-rule.v1.json
+name: Microsoft Intune Enterprise MDM disabled for Slack
+description: |-
+  ## Goal
+  Detect when Microsoft Intune Enterprise MDM has been disabled for Slack.
+
+  ## Strategy
+  This rule monitors Slack audit logs for the disabling of Microsoft Intune Enterprise MDM. Without mobile app management enrollment, organizations can add Slack to trusted apps to protect sensitive business data on unmanaged personal devices. An attacker may attempt to disable this feature, weakening the organization's defenses.
+
+  ## Triage and response
+  1. Verify if the change made by the user is authorized.
+  2. If the change was unauthorized or unexpected, initiate the organization's incident response process and investigate.
+enabled: true
+severity: Low
+query_text: |-
+  %ingest.source_type:slack
+  service:audit-logs-service
+  action:intune_disabled
+  | groupbycount(actor.user.email)
+  | where @q.count > 0
+time_range_s: 300
+run_frequency_s: 60
+event_sink_keys:
+- low_severity_alerts
+tags:
+- techniques.t1562.impair_defenses
+- source.slack
+- tactics.ta0005.defense_evasion

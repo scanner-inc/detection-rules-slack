@@ -1,0 +1,28 @@
+# schema: https://scanner.dev/schema/scanner-detection-rule.v1.json
+name: Slack SSO setting changed
+description: |-
+  ## Goal
+  Detect changes to Single Sign On (SSO) restrictions.
+
+  ## Strategy
+  This rule monitors Slack audit logs for changes to SSO restrictions, as attackers may modify authentication processes to access user credentials or gain unauthorized access to accounts.
+
+  ## Triage and response
+  1. Verify if the change made by the user is authorized.
+  2. If the change was unauthorized or unexpected, initiate your organization's incident response process and investigate.
+enabled: true
+severity: Medium
+query_text: |-
+  %ingest.source_type:slack
+  service:audit-logs-service
+  action:pref.sso_setting_changed
+  | groupbycount(actor.user.email)
+  | where @q.count > 0
+time_range_s: 300
+run_frequency_s: 60
+event_sink_keys:
+- medium_severity_alerts
+tags:
+- techniques.t1556.modify_authentication_process
+- source.slack
+- tactics.ta0003.persistence

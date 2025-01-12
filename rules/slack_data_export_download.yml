@@ -1,0 +1,44 @@
+# schema: https://scanner.dev/schema/scanner-detection-rule.v1.json
+name: Slack data export download
+description: |-
+  ## Goal
+
+  Detect when a Slack export, such as a channel or user export, is downloaded.
+
+  ## Strategy
+
+  This rule monitors Slack events for downloaded exports, which can include significant data like conversations, files, and user information. Unauthorized exports may indicate a potential data breach, insider threat, or misuse of admin privileges.
+
+  Potential risks include:
+
+  - Unauthorized access to sensitive company data.
+  - Insider threats sharing confidential information.
+  - Exposure of private conversations and user details to unauthorized parties.
+
+  ## Triage and response
+
+  1. Verify if the export download is expected by:
+     - Contacting the user or admin who initiated the export to confirm the legitimacy of the request.
+     - Reviewing the type of data exported and the business justification for the action.
+     - Checking Slack logs for other unusual activities by the user, such as mass downloads or privilege escalation.
+
+  2. If the export is unauthorized or unexpected:
+     - Initiate the organization's incident response process and investigate.
+     - Analyze the exported data for sensitive information and determine the scope of exposure.
+     - Monitor for any further attempts to export data or download sensitive information.
+enabled: true
+severity: Low
+query_text: |-
+  %ingest.source_type:slack
+  service:audit-logs-service
+  action:(channels_export_downloaded manual_export_downloaded manual_user_export_downloaded)
+  | groupbycount(actor.user.email)
+  | where @q.count > 5
+time_range_s: 300
+run_frequency_s: 60
+event_sink_keys:
+- low_severity_alerts
+tags:
+- techniques.t1567.exfiltration_over_web_service
+- source.slack
+- tactics.ta0010.exfiltration

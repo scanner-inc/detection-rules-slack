@@ -1,0 +1,49 @@
+# schema: https://scanner.dev/schema/scanner-detection-rule.v1.json
+name: Slack private channel converted to public
+description: |-
+  ## Goal
+
+  Detect when a Slack channel is changed from private to public.
+
+  ## Strategy
+
+  This rule monitors Slack events for changes in a channel's privacy setting from private to public. Making a private channel public can expose sensitive conversations and information. Tracking this change is crucial as it may be deliberate, accidental, or malicious.
+
+  Potential risks associated with this change include:
+
+  - Exposure of sensitive information to a wider audience.
+  - Unintended sharing of critical discussions.
+  - Increased risk of data leaks if the channel contains sensitive information.
+
+  ## Triage and response
+
+  1. Determine if the channel change is expected by:
+
+     - Contacting the channel owner or administrators to confirm whether they authorized the change.
+     - Reviewing Slack logs related to the user who performed the change, focusing on:
+       - The time of the change and surrounding activities.
+       - Unusual behavior or other changes, such as role modifications or new members added to the channel.
+     - Checking the content of the channel to assess whether it contains sensitive information that should not be public.
+
+  2. If the activity is unauthorized or malicious:
+
+     - Begin the organization's incident response process to investigate further.
+     - Immediately revert the channel back to private if it contains sensitive data.
+     - Review access permissions to ensure only trusted users can modify channel privacy settings.
+     - Investigate if any unauthorized users accessed the channel while it was public and evaluate potential exposure.
+enabled: true
+severity: Low
+query_text: |-
+  %ingest.source_type:slack
+  service:audit-logs-service
+  action:private_channel_converted_to_public
+  | groupbycount(actor.user.email)
+  | where @q.count > 0
+time_range_s: 300
+run_frequency_s: 60
+event_sink_keys:
+- low_severity_alerts
+tags:
+- tactics.ta0009.collection
+- techniques.t1213.data_from_information_repositories
+- source.slack

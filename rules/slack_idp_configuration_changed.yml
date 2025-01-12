@@ -1,0 +1,28 @@
+# schema: https://scanner.dev/schema/scanner-detection-rule.v1.json
+name: Slack IdP configuration changed
+description: |-
+  ## Goal
+  Detect modifications to Slack identity provider (IdP) configuration settings.
+
+  ## Strategy
+  This rule monitors Slack audit logs for changes in IdP settings. Attackers may alter authentication processes to access user credentials or gain unauthorized account access.
+
+  ## Triage and Response
+  1. Determine if the change made by the user is authorized.
+  2. If the change is unauthorized or unexpected, initiate your organization's incident response process and investigate.
+enabled: true
+severity: Medium
+query_text: |-
+  %ingest.source_type:slack
+  service:audit-logs-service
+  action:(idp_configuration_added idp_configuration_deleted idp_prod_configuration_updated)
+  | groupbycount(actor.user.email)
+  | where @q.count > 0
+time_range_s: 300
+run_frequency_s: 60
+event_sink_keys:
+- medium_severity_alerts
+tags:
+- techniques.t1556.modify_authentication_process
+- source.slack
+- tactics.ta0003.persistence

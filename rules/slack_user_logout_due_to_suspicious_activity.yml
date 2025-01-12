@@ -1,0 +1,39 @@
+# schema: https://scanner.dev/schema/scanner-detection-rule.v1.json
+name: Slack user logout due to suspicious activity
+description: |
+  ## Goal
+
+  Alert when a Slack user is logged out due to a detected compromised account.
+
+  ## Strategy
+
+  This rule monitors Slack events for user logouts resulting from detected account compromises. Users may be logged out due to suspicious behavior, such as unusual login patterns or unauthorized access attempts.
+
+  ## Triage and response
+
+  1. Determine if the behavior is expected by:
+  - Contacting the user to confirm if they initiated any recent unusual actions.
+  - Checking Slack logs for the user's email, focusing on geolocation, IP address, and ASN.
+  - Identifying any actions taken before being logged out, such as file downloads and channel messages.
+
+  2. If the activity is deemed malicious:
+  - Begin your organization's incident response process and investigate.
+  - Force a password reset for the user.
+  - Review and revoke any suspicious OAuth integrations tied to the user's account.
+  - Enable or enforce multi-factor authentication (MFA) if not already implemented for the user.
+enabled: true
+severity: Medium
+query_text: |-
+  %ingest.source_type:slack
+  service:audit-logs-service
+  action:user_logout_compromised
+  | groupbycount(actor.user.email)
+  | where @q.count > 0
+time_range_s: 300
+run_frequency_s: 60
+event_sink_keys:
+- medium_severity_alerts
+tags:
+- techniques.t1078.valid_accounts
+- source.slack
+- tactics.ta0001.initial_access

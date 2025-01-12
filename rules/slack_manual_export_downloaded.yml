@@ -1,0 +1,30 @@
+# schema: https://scanner.dev/schema/scanner-detection-rule.v1.json
+name: Slack manual export downloaded
+description: |-
+  ## Goal
+  Detect when a Slack manual export has been downloaded.
+
+  ## Strategy
+  This rule monitors Slack audit logs for manual export downloads, which include messages and links to files from public channels, private channels, and direct messages.
+
+  ## Triage and Response
+  1. Determine if the change taken by the user email is authorized.
+  2. If the change was not authorized or was unexpected, begin your organization's incident response process and investigate.
+enabled: true
+severity: Low
+query_text: |-
+  %ingest.source_type:slack
+  service:audit-logs-service
+  action:manual_export_downloaded
+  | groupbycount(actor.user.email)
+  | where @q.count > 0
+time_range_s: 300
+run_frequency_s: 60
+event_sink_keys:
+- low_severity_alerts
+tags:
+- techniques.t1567.exfiltration_over_web_service
+- tactics.ta0009.collection
+- techniques.t1530.data_from_cloud_storage
+- source.slack
+- tactics.ta0010.exfiltration

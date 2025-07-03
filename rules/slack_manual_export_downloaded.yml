@@ -25,6 +25,6 @@ event_sink_keys:
 tags:
 - techniques.t1567.exfiltration_over_web_service
 - tactics.ta0009.collection
-- techniques.t1530.data_from_cloud_storage
+- techniques.t1530.data_from_cloud_storage_object
 - source.slack
 - tactics.ta0010.exfiltration

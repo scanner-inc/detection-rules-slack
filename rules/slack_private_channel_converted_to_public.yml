@@ -34,7 +34,7 @@ description: |-
 enabled: true
 severity: Low
 query_text: |-
-  %ingest.source_type:slack
+  %ingest.source_type:"slack:audit"
   service:audit-logs-service
   action:private_channel_converted_to_public
   | groupbycount(actor.user.email)

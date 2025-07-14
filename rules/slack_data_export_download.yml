@@ -29,7 +29,7 @@ description: |-
 enabled: true
 severity: Low
 query_text: |-
-  %ingest.source_type:slack
+  %ingest.source_type:"slack:audit"
   service:audit-logs-service
   action:(channels_export_downloaded manual_export_downloaded manual_user_export_downloaded)
   | groupbycount(actor.user.email)

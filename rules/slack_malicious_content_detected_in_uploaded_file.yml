@@ -29,7 +29,7 @@ description: |-
 enabled: true
 severity: Medium
 query_text: |-
-  %ingest.source_type:slack
+  %ingest.source_type:"slack:audit"
   service:audit-logs-service
   action:file_malicious_content_detected
   | groupbycount(actor.user.email)

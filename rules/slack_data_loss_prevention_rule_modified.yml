@@ -13,7 +13,7 @@ description: |-
 enabled: true
 severity: Low
 query_text: |-
-  %ingest.source_type:slack
+  @scnr.source_type:slack
   service:audit-logs-service
   action:(native_dlp_rule_deactivated native_dlp_violation_deleted)
   | groupbycount(actor.user.email)

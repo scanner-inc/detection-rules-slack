@@ -31,7 +31,6 @@ description: |-
      - Immediately revert the channel back to private if it contains sensitive data.
      - Review access permissions to ensure only trusted users can modify channel privacy settings.
      - Investigate if any unauthorized users accessed the channel while it was public and evaluate potential exposure.
-enabled: true
 severity: Low
 query_text: |-
   @scnr.source_type:slack

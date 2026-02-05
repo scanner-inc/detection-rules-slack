@@ -26,7 +26,6 @@ description: |-
      - Initiate the organization's incident response process and investigate.
      - Analyze the exported data for sensitive information and determine the scope of exposure.
      - Monitor for any further attempts to export data or download sensitive information.
-enabled: true
 severity: Low
 query_text: |-
   @scnr.source_type:slack

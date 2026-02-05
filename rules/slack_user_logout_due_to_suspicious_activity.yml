@@ -21,7 +21,6 @@ description: |
   - Force a password reset for the user.
   - Review and revoke any suspicious OAuth integrations tied to the user's account.
   - Enable or enforce multi-factor authentication (MFA) if not already implemented for the user.
-enabled: true
 severity: Medium
 query_text: |-
   @scnr.source_type:slack
